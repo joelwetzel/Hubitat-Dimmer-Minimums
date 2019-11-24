@@ -96,7 +96,9 @@ def levelHandler(evt) {
     log "${triggeredDevice.displayName} LEVEL CHANGE detected (${currentLevel})"	
 
     
-    if (currentLevel < minimumLevel && triggeredDevice.currentValue("switch") == "on") {
+    if (currentLevel < minimumLevel 
+        && currentLevel > 0
+        && triggeredDevice.currentValue("switch") == "on") {
         triggeredDevice.setLevel(minimumLevel);
         log "${triggeredDevice.displayName} setLevel(${minimumLevel})"
     }
