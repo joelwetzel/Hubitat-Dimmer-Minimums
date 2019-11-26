@@ -131,22 +131,3 @@ def log(msg) {
 		log.debug msg
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
