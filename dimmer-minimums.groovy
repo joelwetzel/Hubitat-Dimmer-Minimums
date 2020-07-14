@@ -1,5 +1,5 @@
 /**
- *  Dimmer Minimums
+ *  Dimmer Minimums v1.0
  *
  *  Copyright 2019 Joel Wetzel
  *
@@ -91,13 +91,13 @@ def initialize() {
 
 def levelHandler(evt) {
 	def triggeredDevice = dimmers.find { it.deviceId == evt.deviceId }
-	def currentLevel = evt.value.toInteger()
+	def newLevel = evt.value.toInteger()
 
-    log "${triggeredDevice.displayName} LEVEL CHANGE detected (${currentLevel})"	
+    log "${triggeredDevice.displayName} LEVEL CHANGE detected (${newLevel})"	
 
     
-    if (currentLevel < minimumLevel 
-        && currentLevel > 0
+    if (newLevel < minimumLevel 
+        && newLevel > 0
         && triggeredDevice.currentValue("switch") == "on") {
         triggeredDevice.setLevel(minimumLevel);
         log "${triggeredDevice.displayName} setLevel(${minimumLevel})"
