@@ -6,6 +6,8 @@
 	"dateReleased": "2020-07-14",
 	"licenseFile": "https://github.com/joelwetzel/Hubitat-Dimmer-Minimums/edit/master/LICENSE",
 	"releaseNotes": "Initial release through Hubitat Package Manager.",
+	"communityLink": "https://community.hubitat.com/t/release-dimmer-minimums",
+	"documentationLink": "https://github.com/joelwetzel/Hubitat-Dimmer-Minimums",
 	"apps" : [
 		{
 			"id" : "c299765c-317c-4275-8d45-28d784b56296",
