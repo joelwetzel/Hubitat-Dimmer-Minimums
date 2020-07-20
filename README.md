@@ -10,3 +10,8 @@ It does this in two ways:
 
 This is to prevent the situation where the switch turns on at 1% but the lights don't actually come on, confusing the user.
 
+## Installation
+
+The best way to install this code is by using [Hubitat Package Manager](https://community.hubitat.com/t/beta-hubitat-package-manager).
+
+However, it can also be installed manually.
