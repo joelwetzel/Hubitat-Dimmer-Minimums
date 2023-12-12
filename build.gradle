@@ -1,0 +1,31 @@
+plugins {
+    id 'groovy'
+}
+
+// Not using standard layout, need to specify folders.
+sourceSets {
+    test {
+        groovy {
+            srcDirs = ['tests']
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+
+    // hubitat_ci repository
+    maven {
+        url 'https://pkgs.dev.azure.com/joelwetzel/_packaging/joelwetzel/maven/v1'
+        credentials {
+                username "AZURE_ARTIFACTS"
+                password "YOUR_TOKEN_HERE"
+            }
+    }
+}
+
+dependencies {
+    testImplementation 'org.codehaus.groovy:groovy-all:2.5.4' // groovy itself
+    testImplementation "org.spockframework:spock-core:1.2-groovy-2.5" // spock framework
+    testImplementation "me.biocomp.hubitat_ci:hubitat_ci:0.18" // hubita_ci
+}
