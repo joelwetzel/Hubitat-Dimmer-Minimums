@@ -19,17 +19,18 @@ import spock.lang.Specification
 * Tests of behavior when an ON event is received.
 */
 class SwitchOnTests extends Specification {
-    private static def getDevice(def from) {
-        if (DeviceWrapper.isInstance(from)) {
-            from
-        } else {
-            from[0]
-        }
-    }
+    // Creating a sandbox object for device script from file.
+    private HubitatAppSandbox sandbox = new HubitatAppSandbox(new File('dimmer-minimums.groovy'))
+
+    // Create mock log
+    def log = Mock(Log)
+
+    // Make AppExecutor return the mock log
+    AppExecutor api = Mock { _ * getLog() >> log }
 
     private def constructMockDimmerDevice(String name, Map state) {
-        def dimmerDevice = getDevice(new DeviceInputValueFactory([Switch, SwitchLevel])
-            .makeInputObject(name, 't',  DefaultAndUserValues.empty(), false))
+        def dimmerDevice = new DeviceInputValueFactory([Switch, SwitchLevel])
+            .makeInputObject(name, 't',  DefaultAndUserValues.empty(), false)
         dimmerDevice.getMetaClass().state = state
         dimmerDevice.getMetaClass().on = { state.switch = "on" }
         dimmerDevice.getMetaClass().off = { state.switch = "off" }
@@ -38,17 +39,8 @@ class SwitchOnTests extends Specification {
         return dimmerDevice
     }
 
-    // Creating a sandbox object for device script from file.
-    private HubitatAppSandbox sandbox = new HubitatAppSandbox(new File('dimmer-minimums.groovy'))
-
     void "switchOnHandler() ensures minimum level"() {
         given:
-        // Create mock log
-        def log = Mock(Log)
-
-        // Make AppExecutor return the mock log
-        AppExecutor api = Mock { _ * getLog() >> log }
-
         // Define a virtual dimmer device
         def dimmerDevice = constructMockDimmerDevice('n', [switch: "off", level: 0])
 
@@ -69,12 +61,6 @@ class SwitchOnTests extends Specification {
 
     void "switchOnHandler() does not change level if above the minimum"() {
         given:
-        // Create mock log
-        def log = Mock(Log)
-
-        // Make AppExecutor return the mock log
-        AppExecutor api = Mock { _ * getLog() >> log }
-
         // Define a virtual dimmer device
         def dimmerDevice = constructMockDimmerDevice('n', [switch: "off", level: 99])
 
@@ -94,16 +80,8 @@ class SwitchOnTests extends Specification {
 
     void "switchOnHandler() adjusts correct dimmer from among multiple devices"() {
         given:
-        // Create mock log
-        def log = Mock(Log)
-
-        // Make AppExecutor return the mock log
-        AppExecutor api = Mock { _ * getLog() >> log }
-
-        // Define a virtual dimmer device
+        // Define two virtual dimmer devices
         def dimmerDevice1 = constructMockDimmerDevice('n1', [switch: "off", level: 0])
-
-        // Define a second virtual dimmer device
         def dimmerDevice2 = constructMockDimmerDevice('n2', [switch: "off", level: 0])
 
         // Run the app sandbox, passing the virtual dimmer devices in.

@@ -19,16 +19,14 @@ import spock.lang.Specification
 * Basic tests for dimmer-minimums.groovy
 */
 class BasicTests extends Specification {
-    private static def getDevice(def from) {
-        if (DeviceWrapper.isInstance(from)) {
-            from
-        } else {
-            from[0]
-        }
-    }
-
     // Creating a sandbox object for device script from file.
     private HubitatAppSandbox sandbox = new HubitatAppSandbox(new File('dimmer-minimums.groovy'))
+
+    // Create mock log
+    def log = Mock(Log)
+
+    // Make AppExecutor return the mock log
+    AppExecutor api = Mock { _ * getLog() >> log }
 
     void "Basic validation"() {
         given:
@@ -40,15 +38,9 @@ class BasicTests extends Specification {
 
     void "installed() logs the settings"() {
         given:
-        // Create mock log
-        def log = Mock(Log)
-
-        // Make AppExecutor return the mock log
-        AppExecutor api = Mock { _ * getLog() >> log }
-
         // Define a virtual dimmer device
-        def dimmerDevice = getDevice(new DeviceInputValueFactory([Switch, SwitchLevel])
-            .makeInputObject('n', 't',  DefaultAndUserValues.empty(), false))
+        def dimmerDevice = new DeviceInputValueFactory([Switch, SwitchLevel])
+            .makeInputObject('n', 't',  DefaultAndUserValues.empty(), false)
 
         // Run the app sandbox, passing the virtual dimmer device in.
         def script = sandbox.run(api: api,
@@ -65,15 +57,9 @@ class BasicTests extends Specification {
 
     void "initialize() subscribes to events"() {
         given:
-        // Create mock log
-        def log = Mock(Log)
-
-        // Make AppExecutor return the mock log
-        AppExecutor api = Mock { _ * getLog() >> log }
-
         // Define a virtual dimmer device
-        def dimmerDevice = getDevice(new DeviceInputValueFactory([Switch, SwitchLevel])
-            .makeInputObject('n', 't',  DefaultAndUserValues.empty(), false))
+        def dimmerDevice = new DeviceInputValueFactory([Switch, SwitchLevel])
+            .makeInputObject('n', 't',  DefaultAndUserValues.empty(), false)
 
         // Run the app sandbox, passing the virtual dimmer device in.
         def script = sandbox.run(api: api,
@@ -91,15 +77,9 @@ class BasicTests extends Specification {
 
     void "Virtual device state can be mocked"() {
         given:
-        // Create mock log
-        def log = Mock(Log)
-
-        // Make AppExecutor return the mock log
-        AppExecutor api = Mock { _ * getLog() >> log }
-
         // Define a virtual dimmer device
-        def dimmerDevice = getDevice(new DeviceInputValueFactory([Switch, SwitchLevel])
-            .makeInputObject('n', 't',  DefaultAndUserValues.empty(), false))
+        def dimmerDevice = new DeviceInputValueFactory([Switch, SwitchLevel])
+            .makeInputObject('n', 't',  DefaultAndUserValues.empty(), false)
         dimmerDevice.getMetaClass().state = [switch: "off", level: 0]
         dimmerDevice.getMetaClass().setLevel = { int level -> state.level = level }
 

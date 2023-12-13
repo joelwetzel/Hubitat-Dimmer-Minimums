@@ -19,20 +19,18 @@ import spock.lang.Specification
 * Tests of behavior when a LEVEL event is received.
 */
 class SetLevelTests extends Specification {
-    private static def getDevice(def from) {
-        if (DeviceWrapper.isInstance(from)) {
-            from
-        } else {
-            from[0]
-        }
-    }
-
     // Creating a sandbox object for device script from file.
     private HubitatAppSandbox sandbox = new HubitatAppSandbox(new File('dimmer-minimums.groovy'))
 
+    // Create mock log
+    def log = Mock(Log)
+
+    // Make AppExecutor return the mock log
+    AppExecutor api = Mock { _ * getLog() >> log }
+
     private def constructMockDimmerDevice(String name, Map state) {
-        def dimmerDevice = getDevice(new DeviceInputValueFactory([Switch, SwitchLevel])
-            .makeInputObject(name, 't',  DefaultAndUserValues.empty(), false))
+        def dimmerDevice = new DeviceInputValueFactory([Switch, SwitchLevel])
+            .makeInputObject(name, 't',  DefaultAndUserValues.empty(), false)
         dimmerDevice.getMetaClass().state = state
         dimmerDevice.getMetaClass().on = { state.switch = "on" }
         dimmerDevice.getMetaClass().off = { state.switch = "off" }
@@ -41,18 +39,8 @@ class SetLevelTests extends Specification {
         return dimmerDevice
     }
 
-    // void setup() {
-
-    // }
-
     void "levelHandler() ensures minimum level"() {
         given:
-        // Create mock log
-        def log = Mock(Log)
-
-        // Make AppExecutor return the mock log
-        AppExecutor api = Mock { _ * getLog() >> log }
-
         // Define a virtual dimmer device
         def dimmerDevice = constructMockDimmerDevice('n', [switch: "on", level: 99])
 
@@ -75,12 +63,6 @@ class SetLevelTests extends Specification {
 
     void "levelHandler() does not change level if dimmer is off"() {
         given:
-        // Create mock log
-        def log = Mock(Log)
-
-        // Make AppExecutor return the mock log
-        AppExecutor api = Mock { _ * getLog() >> log }
-
         // Define a virtual dimmer device
         def dimmerDevice = constructMockDimmerDevice('n', [switch: "off", level: 99])
 
@@ -102,12 +84,6 @@ class SetLevelTests extends Specification {
 
     void "levelHandler() does not change level if above the minimum"() {
         given:
-        // Create mock log
-        def log = Mock(Log)
-
-        // Make AppExecutor return the mock log
-        AppExecutor api = Mock { _ * getLog() >> log }
-
         // Define a virtual dimmer device
         def dimmerDevice = constructMockDimmerDevice('n', [switch: "on", level: 99])
 
@@ -127,16 +103,8 @@ class SetLevelTests extends Specification {
 
     void "levelHandler() adjusts correct dimmer from among multiple devices"() {
         given:
-        // Create mock log
-        def log = Mock(Log)
-
-        // Make AppExecutor return the mock log
-        AppExecutor api = Mock { _ * getLog() >> log }
-
-        // Define a virtual dimmer device
+        // Define two virtual dimmer devices
         def dimmerDevice1 = constructMockDimmerDevice('n1', [switch: "on", level: 99])
-
-        // Define a second virtual dimmer device
         def dimmerDevice2 = constructMockDimmerDevice('n2', [switch: "on", level: 99])
 
         // Run the app sandbox, passing the virtual dimmer devices in.
