@@ -19,7 +19,7 @@ repositories {
         url 'https://maven.pkg.github.com/joelwetzel/hubitat_ci'
         credentials {
             username "joelwetzel"
-            password "${System.env.GITHUB_TOKEN}"
+            password "${System.env.MAVENKEY}"
         }
     }
 }
