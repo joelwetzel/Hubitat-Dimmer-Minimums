@@ -18,7 +18,7 @@ repositories {
     maven {
         url 'https://pkgs.dev.azure.com/joelwetzel/_packaging/joelwetzel/maven/v1'
         credentials {
-                username "AZURE_ARTIFACTS"
+                username "joelwetzel"
                 password "${System.env.MAVENKEY}"
             }
     }
