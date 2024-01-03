@@ -17,11 +17,15 @@ repositories {
     // hubitat_ci repository
     maven {
         url 'https://maven.pkg.github.com/joelwetzel/hubitat_ci'
+        credentials {
+            username "joelwetzel"
+            password "${System.env.MAVENKEY}"
+        }
     }
 }
 
 dependencies {
     testImplementation 'org.codehaus.groovy:groovy-all:2.5.4' // groovy itself
     testImplementation "org.spockframework:spock-core:1.2-groovy-2.5" // spock framework
-    testImplementation "me.biocomp.hubitat_ci:hubitat_ci:0.22" // hubitat_ci
+    testImplementation "me.biocomp.hubitat_ci:hubitat_ci:0.22" // hubita_ci
 }
