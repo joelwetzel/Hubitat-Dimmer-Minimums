@@ -24,12 +24,12 @@ repositories {
     }
 }
 
-tasks.withType(Test) {
-    doFirst {
-        println "*** ENVIRONMENT VARIABLE DUMP ***"
-        environment.each { k, v -> println "${k}:${v}" }
-    }
-}
+// tasks.withType(Test) {
+//     doFirst {
+//         println "*** ENVIRONMENT VARIABLE DUMP ***"
+//         environment.each { k, v -> println "${k}:${v}" }
+//     }
+// }
 
 dependencies {
     testImplementation 'org.codehaus.groovy:groovy-all:2.5.4' // groovy itself
