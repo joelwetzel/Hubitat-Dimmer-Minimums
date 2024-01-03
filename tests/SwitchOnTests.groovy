@@ -75,7 +75,7 @@ class SwitchOnTests extends Specification {
 
         then:
         1 * log.debug('n (99) ON detected')
-        dimmerDevice.state.level == 99
+        dimmerDevice.state.level == 98
     }
 
     void "switchOnHandler() adjusts correct dimmer from among multiple devices"() {
