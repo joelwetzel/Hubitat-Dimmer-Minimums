@@ -19,8 +19,15 @@ repositories {
         url 'https://maven.pkg.github.com/joelwetzel/hubitat_ci'
         credentials {
             username "joelwetzel"
-            password "${System.env.MAVENKEY}"
+            password "${System.env.GITHUB_TOKEN}"
         }
+    }
+}
+
+tasks.withType(Test) {
+    doFirst {
+        println "*** ENVIRONMENT VARIABLE DUMP ***"
+        environment.each { k, v -> println "${k}:${v}" }
     }
 }
 
