@@ -29,15 +29,15 @@ However, it can also be installed manually, by copying the contents of dimmer-mi
 ### Unit Tests
 Unit tests are stored in the /tests folder.
 
-They rely on having an environment variable set, called **MAVENKEY**.  It should be a Personal Access Token from my Maven feed in ADO.
+They rely on having an environment variable set, called **MAVENKEY**.  It should be a Github Personal Access Token.
 
 You can run them in the terminal like so:
 >./gradlew build
 
-They will also be run automatically by an ADO [pipeline](https://dev.azure.com/joelwetzel/hubitat_ci/_build?definitionId=1).  The pipeline runs the tests and tracks test results.  It does NOT do any publishing to HPM.
+They will also be run automatically by the Github [workflow](https://github.com/joelwetzel/Hubitat-Dimmer-Minimums/actions/workflows/gradle.yml).  The workflow runs the tests and tracks test results.  It does NOT do any publishing to HPM.
 
 ### Testing Fixture
 - The unit tests make use of the [Hubitat CI](https://github.com/biocomp/hubitat_ci) package from #biocomp.  It's a fixture that emulates some of the Hubitat system, and helps with unit testing Hubitat apps and drivers.
 - However, I extended it, so for now, this app's build.gradle uses my own fork:
   - Repo: https://github.com/joelwetzel/hubitat_ci
-  - Maven artifacts: https://dev.azure.com/joelwetzel/hubitat_ci/_artifacts/feed/joelwetzel
+  - Maven artifacts: https://github.com/joelwetzel/hubitat_ci/packages/2028932
