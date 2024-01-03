@@ -10,8 +10,32 @@ It does this in two ways:
 
 This is to prevent the situation where the switch turns on at 1% but the lights don't actually come on, confusing the user.
 
-## Installation
+## End-User Installation
 
 The best way to install this code is by using [Hubitat Package Manager](https://community.hubitat.com/t/beta-hubitat-package-manager).
 
-However, it can also be installed manually.
+However, it can also be installed manually, by copying the contents of dimmer-minimums.groovy into your Hubitat admin site.
+
+## Developer Notes
+*The following notes are for myself when working on the code:*
+
+### Prereqs
+- Gradle 8.5
+- OpenJDK 11
+- [Groovy](https://groovy-lang.org/install.html)
+
+### Unit Tests
+Unit tests are stored in the /tests folder.
+
+They rely on having an environment variable set, called **MAVENKEY**.  It should be a Personal Access Token from my Maven feed in ADO.
+
+You can run them in the terminal like so:
+>./gradlew build
+
+They will also be run automatically by an ADO [pipeline](https://dev.azure.com/joelwetzel/hubitat_ci/_build?definitionId=1).  The pipeline runs the tests and tracks test results.  It does NOT do any publishing to HPM.
+
+### Testing Fixture
+- The unit tests make use of the [Hubitat CI](https://github.com/biocomp/hubitat_ci) package from #biocomp.  It's a fixture that emulates some of the Hubitat system, and helps with unit testing Hubitat apps and drivers.
+- However, I extended it, so for now, this app's build.gradle uses my own fork:
+  - Repo: https://github.com/joelwetzel/hubitat_ci
+  - Maven artifacts: https://dev.azure.com/joelwetzel/hubitat_ci/_artifacts/feed/joelwetzel
