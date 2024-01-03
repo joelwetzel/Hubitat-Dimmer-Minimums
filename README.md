@@ -1,4 +1,6 @@
 # Dimmer Minimums app for Hubitat
+![Build/Test State](https://github.com/joelwetzel/Hubitat-Dimmer-Minimums/actions/workflows/gradle.yml/badge.svg)
+
 An app for Hubitat to enforce a minimum level for smart switches/lights that don't have a config setting for it.
 
 ## Use Case
