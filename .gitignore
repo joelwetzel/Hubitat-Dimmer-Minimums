@@ -2,3 +2,5 @@
 .hubitat
 .vscode
 /build
+.DS_Store
+bin

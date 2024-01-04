@@ -22,9 +22,11 @@ However, it can also be installed manually, by copying the contents of dimmer-mi
 *The following notes are for myself when working on the code:*
 
 ### Prereqs
-- Gradle 8.5
-- OpenJDK 11
-- [Groovy](https://groovy-lang.org/install.html)
+1. Gradle 8.5
+> brew install gradle
+2. [OpenJDK 11](https://www.openlogic.com/openjdk-downloads?field_java_parent_version_target_id=406&field_operating_system_target_id=All&field_architecture_target_id=All&field_java_package_target_id=All)
+3. Groovy
+> brew install groovy
 
 ### Unit Tests
 Unit tests are stored in the /tests folder.

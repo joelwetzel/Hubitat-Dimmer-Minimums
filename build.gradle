@@ -34,5 +34,5 @@ repositories {
 dependencies {
     testImplementation 'org.codehaus.groovy:groovy-all:2.5.4' // groovy itself
     testImplementation "org.spockframework:spock-core:1.2-groovy-2.5" // spock framework
-    testImplementation "me.biocomp.hubitat_ci:hubitat_ci:0.22" // hubita_ci
+    testImplementation "me.biocomp.hubitat_ci:hubitat_ci:0.24" // hubita_ci
 }
