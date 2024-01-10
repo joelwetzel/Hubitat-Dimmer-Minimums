@@ -34,6 +34,10 @@ class MockDimmerFactory {
                 state.level = level
 
                 api.sendEvent(dimmerDevice, [name: "level", value: level])
+
+                if (level > 0) {
+                    on()
+                }
         }
 
         return dimmerDevice

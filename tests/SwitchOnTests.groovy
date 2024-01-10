@@ -1,6 +1,10 @@
 package joelwetzel.dimmer_minimums.tests
 
+import joelwetzel.dimmer_minimums.mockDeviceFactories.MockDimmerFactory
+import joelwetzel.dimmer_minimums.utils.SubscribingAppExecutor
+
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
+import me.biocomp.hubitat_ci.api.app_api.Subscription
 import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.app.HubitatAppSandbox
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
@@ -19,84 +23,90 @@ import spock.lang.Specification
 * Tests of behavior when an ON event is received.
 */
 class SwitchOnTests extends Specification {
-    // Creating a sandbox object for device script from file.
     private HubitatAppSandbox sandbox = new HubitatAppSandbox(new File('dimmer-minimums.groovy'))
 
-    // Create mock log
     def log = Mock(Log)
 
-    // Make AppExecutor return the mock log
-    AppExecutor api = Mock { _ * getLog() >> log }
-
-    private def constructMockDimmerDevice(String name, Map state) {
-        def dimmerDevice = new DeviceInputValueFactory([Switch, SwitchLevel])
-            .makeInputObject(name, 't',  DefaultAndUserValues.empty(), false)
-        dimmerDevice.getMetaClass().state = state
-        dimmerDevice.getMetaClass().on = { state.switch = "on" }
-        dimmerDevice.getMetaClass().off = { state.switch = "off" }
-        dimmerDevice.getMetaClass().setLevel = { int level -> state.level = level }
-
-        return dimmerDevice
+    def api = Spy(SubscribingAppExecutor) {
+        _*getLog() >> log
     }
+
+    def dimmerFactory = new MockDimmerFactory()
 
     void "switchOnHandler() ensures minimum level"() {
         given:
         // Define a virtual dimmer device
-        def dimmerDevice = constructMockDimmerDevice('n', [switch: "off", level: 0])
+        def dimmerDevice = dimmerFactory.constructDevice('n')
 
         // Run the app sandbox, passing the virtual dimmer device in.
         def script = sandbox.run(api: api,
             userSettingValues: [dimmers: [dimmerDevice], minimumLevel: 5, enableLogging: true],
             )
+        api.setScript(script)
+
+        dimmerFactory.attachBehavior(dimmerDevice, api, script, [switch: "off", level: 0])
 
         when:
+        script.installed()
         dimmerDevice.on()
-        script.switchOnHandler([deviceId: dimmerDevice.deviceId])
 
         then:
         1 * log.debug('n (0) ON detected')
         1 * log.debug('n setLevel(5)')
+        1 * api.sendEvent(dimmerDevice, [name: "level", value: 5])
+        dimmerDevice.state.switch == "on"
         dimmerDevice.state.level == 5
     }
 
     void "switchOnHandler() does not change level if above the minimum"() {
         given:
         // Define a virtual dimmer device
-        def dimmerDevice = constructMockDimmerDevice('n', [switch: "off", level: 99])
+        def dimmerDevice = dimmerFactory.constructDevice('n')
 
         // Run the app sandbox, passing the virtual dimmer device in.
         def script = sandbox.run(api: api,
             userSettingValues: [dimmers: [dimmerDevice], minimumLevel: 5, enableLogging: true],
             )
+        api.setScript(script)
+
+        dimmerFactory.attachBehavior(dimmerDevice, api, script, [switch: "off", level: 99])
 
         when:
+        script.installed()
         dimmerDevice.on()
-        script.switchOnHandler([deviceId: dimmerDevice.deviceId])
 
         then:
         1 * log.debug('n (99) ON detected')
+        dimmerDevice.state.switch == "on"
         dimmerDevice.state.level == 99
     }
 
     void "switchOnHandler() adjusts correct dimmer from among multiple devices"() {
         given:
         // Define two virtual dimmer devices
-        def dimmerDevice1 = constructMockDimmerDevice('n1', [switch: "off", level: 0])
-        def dimmerDevice2 = constructMockDimmerDevice('n2', [switch: "off", level: 0])
+        def dimmerDevice1 = dimmerFactory.constructDevice('n1')
+        def dimmerDevice2 = dimmerFactory.constructDevice('n2')
 
         // Run the app sandbox, passing the virtual dimmer devices in.
         def script = sandbox.run(api: api,
             userSettingValues: [dimmers: [dimmerDevice1, dimmerDevice2], minimumLevel: 5, enableLogging: true],
             )
+        api.setScript(script)
+
+        dimmerFactory.attachBehavior(dimmerDevice1, api, script, [switch: "off", level: 0])
+        dimmerFactory.attachBehavior(dimmerDevice2, api, script, [switch: "off", level: 0])
 
         when:
+        script.installed()
         dimmerDevice2.on()
         script.switchOnHandler([deviceId: dimmerDevice2.deviceId])
 
         then:
         1 * log.debug('n2 (0) ON detected')
         1 * log.debug('n2 setLevel(5)')
+        dimmerDevice2.state.switch == "on"
         dimmerDevice2.state.level == 5
+        dimmerDevice1.state.switch == "off"
         dimmerDevice1.state.level == 0
     }
 }

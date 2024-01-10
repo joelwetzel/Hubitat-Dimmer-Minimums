@@ -1,5 +1,8 @@
 package joelwetzel.dimmer_minimums.tests
 
+import joelwetzel.dimmer_minimums.mockDeviceFactories.MockDimmerFactory
+import joelwetzel.dimmer_minimums.utils.SubscribingAppExecutor
+
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.app.HubitatAppSandbox
@@ -19,14 +22,15 @@ import spock.lang.Specification
 * Basic tests for dimmer-minimums.groovy
 */
 class BasicTests extends Specification {
-    // Creating a sandbox object for device script from file.
     private HubitatAppSandbox sandbox = new HubitatAppSandbox(new File('dimmer-minimums.groovy'))
 
-    // Create mock log
     def log = Mock(Log)
 
-    // Make AppExecutor return the mock log
-    AppExecutor api = Mock { _ * getLog() >> log }
+    def api = Spy(SubscribingAppExecutor) {
+        _*getLog() >> log
+    }
+
+    def dimmerFactory = new MockDimmerFactory()
 
     void "Basic validation"() {
         given:
@@ -38,13 +42,12 @@ class BasicTests extends Specification {
 
     void "installed() logs the settings"() {
         given:
-        // Define a virtual dimmer device
-        def dimmerDevice = new DeviceInputValueFactory([Switch, SwitchLevel])
-            .makeInputObject('n', 't',  DefaultAndUserValues.empty(), false)
+        def dimmerDevice = dimmerFactory.constructDevice('n')
 
         // Run the app sandbox, passing the virtual dimmer device in.
         def script = sandbox.run(api: api,
             userSettingValues: [dimmers: [dimmerDevice], minimumLevel: 5, enableLogging: true])
+        api.setScript(script)
 
         when:
         // Run installed() method on app script.
@@ -57,44 +60,21 @@ class BasicTests extends Specification {
 
     void "initialize() subscribes to events"() {
         given:
-        // Define a virtual dimmer device
-        def dimmerDevice = new DeviceInputValueFactory([Switch, SwitchLevel])
-            .makeInputObject('n', 't',  DefaultAndUserValues.empty(), false)
+        def dimmerDevice = dimmerFactory.constructDevice('n')
 
         // Run the app sandbox, passing the virtual dimmer device in.
         def script = sandbox.run(api: api,
             userSettingValues: [dimmers: [dimmerDevice], minimumLevel: 5, enableLogging: true])
+        api.setScript(script)
 
         when:
         // Run initialize() method on app script.
+        api.getMetaClass().subscribe = { Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handler -> this.subscribe(toWhat, attributeNameOrNameAndValueOrEventName, handler) }
         script.initialize()
 
         then:
         // Expect that events are subscribe to
         1 * api.subscribe([dimmerDevice], 'level', 'levelHandler')
         1 * api.subscribe([dimmerDevice], 'switch.on', 'switchOnHandler')
-    }
-
-    void "Virtual device state can be mocked"() {
-        given:
-        // Define a virtual dimmer device
-        def dimmerDevice = new DeviceInputValueFactory([Switch, SwitchLevel])
-            .makeInputObject('n', 't',  DefaultAndUserValues.empty(), false)
-        dimmerDevice.getMetaClass().state = [switch: "off", level: 0]
-        dimmerDevice.getMetaClass().setLevel = { int level -> state.level = level }
-
-        // Run the app sandbox, passing the virtual dimmer device in.
-        def script = sandbox.run(api: api,
-            userSettingValues: [dimmers: [dimmerDevice], minimumLevel: 5, enableLogging: true],
-            )
-
-        expect:
-        dimmerDevice.state.level == 0
-
-        when:
-        dimmerDevice.setLevel(99)
-
-        then:
-        dimmerDevice.state.level == 99
     }
 }
