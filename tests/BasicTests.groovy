@@ -1,7 +1,7 @@
 package joelwetzel.dimmer_minimums.tests
 
-import joelwetzel.dimmer_minimums.mockDeviceFactories.MockDimmerFactory
-import joelwetzel.dimmer_minimums.utils.SubscribingAppExecutor
+import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixture
+import me.biocomp.hubitat_ci.util.AppExecutorWithEventForwarding
 
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import me.biocomp.hubitat_ci.api.common_api.Log
@@ -26,32 +26,27 @@ class BasicTests extends Specification {
 
     def log = Mock(Log)
 
-    def api = Spy(SubscribingAppExecutor) {
+    def appExecutor = Spy(AppExecutorWithEventForwarding) {
         _*getLog() >> log
     }
 
-    def dimmerFactory = new MockDimmerFactory()
-
-    void "Basic validation"() {
-        given:
-
+    void "Basic validation of app script"() {
         expect:
-        // Compile, construct script object, and validate definition() and preferences()
         sandbox.run()
     }
 
     void "installed() logs the settings"() {
         given:
-        def dimmerDevice = dimmerFactory.constructDevice('n')
+        def dimmerFixture = DimmerFixture.create('n')
 
         // Run the app sandbox, passing the virtual dimmer device in.
-        def script = sandbox.run(api: api,
-            userSettingValues: [dimmers: [dimmerDevice], minimumLevel: 5, enableLogging: true])
-        api.setScript(script)
+        def appScript = sandbox.run(api: appExecutor,
+            userSettingValues: [dimmers: [dimmerFixture], minimumLevel: 5, enableLogging: true])
+        appExecutor.setSubscribingScript(appScript)
 
         when:
         // Run installed() method on app script.
-        script.installed()
+        appScript.installed()
 
         then:
         // Expect that log.info() was called with this string
@@ -60,21 +55,19 @@ class BasicTests extends Specification {
 
     void "initialize() subscribes to events"() {
         given:
-        def dimmerDevice = dimmerFactory.constructDevice('n')
+        def dimmerFixture = DimmerFixture.create('n')
 
-        // Run the app sandbox, passing the virtual dimmer device in.
-        def script = sandbox.run(api: api,
-            userSettingValues: [dimmers: [dimmerDevice], minimumLevel: 5, enableLogging: true])
-        api.setScript(script)
+        // Run the app sandbox, passing the dimmer fixture in.
+        def appScript = sandbox.run(api: appExecutor,
+            userSettingValues: [dimmers: [dimmerFixture], minimumLevel: 5, enableLogging: true])
+        appExecutor.setSubscribingScript(appScript)
 
         when:
-        // Run initialize() method on app script.
-        api.getMetaClass().subscribe = { Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handler -> this.subscribe(toWhat, attributeNameOrNameAndValueOrEventName, handler) }
-        script.initialize()
+        appScript.initialize()
 
         then:
         // Expect that events are subscribe to
-        1 * api.subscribe([dimmerDevice], 'level', 'levelHandler')
-        1 * api.subscribe([dimmerDevice], 'switch.on', 'switchOnHandler')
+        1 * appExecutor.subscribe([dimmerFixture], 'level', 'levelHandler')
+        1 * appExecutor.subscribe([dimmerFixture], 'switch.on', 'switchOnHandler')
     }
 }
