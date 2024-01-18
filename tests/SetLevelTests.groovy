@@ -1,6 +1,6 @@
 package joelwetzel.dimmer_minimums.tests
 
-import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixture
+import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixtureFactory
 import me.biocomp.hubitat_ci.util.AppExecutorWithEventForwarding
 
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
@@ -34,7 +34,7 @@ class SetLevelTests extends Specification {
     void "levelHandler() ensures minimum level"() {
         given:
         // Define a dimmer fixture
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the dimmer fixture in.
         def appScript = sandbox.run(api: appExecutor,
@@ -42,7 +42,7 @@ class SetLevelTests extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture.initialize(appExecutor, appScript, [switch: "on", level: 99])
+        dimmerFixture.initialize(appExecutor, [switch: "on", level: 99])
 
         when:
         appScript.installed()
@@ -56,7 +56,7 @@ class SetLevelTests extends Specification {
     void "setLevel() can turn on the dimmer"() {
         given:
         // Define a dimmer fixture
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the dimmer fixture in.
         def appScript = sandbox.run(api: appExecutor,
@@ -64,7 +64,7 @@ class SetLevelTests extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture.initialize(appExecutor, appScript, [switch: "off", level: 99])
+        dimmerFixture.initialize(appExecutor, [switch: "off", level: 99])
 
         when:
         appScript.installed()
@@ -78,7 +78,7 @@ class SetLevelTests extends Specification {
     void "setLevel() does not turn on dimmer if zero"() {
         given:
         // Define a dimmer fixture
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the dimmer fixture in.
         def appScript = sandbox.run(api: appExecutor,
@@ -86,7 +86,7 @@ class SetLevelTests extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture.initialize(appExecutor, appScript, [switch: "off", level: 99])
+        dimmerFixture.initialize(appExecutor, [switch: "off", level: 99])
 
         when:
         appScript.installed()
@@ -100,7 +100,7 @@ class SetLevelTests extends Specification {
     void "levelHandler() does not change level if above the minimum"() {
         given:
         // Define a dimmer fixture
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the dimmer fixture in.
         def appScript = sandbox.run(api: appExecutor,
@@ -108,7 +108,7 @@ class SetLevelTests extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture.initialize(appExecutor, appScript, [switch: "on", level: 99])
+        dimmerFixture.initialize(appExecutor, [switch: "on", level: 99])
 
         when:
         appScript.installed()
@@ -122,8 +122,8 @@ class SetLevelTests extends Specification {
     void "levelHandler() adjusts correct dimmer from among multiple devices"() {
         given:
         // Define two dimmer fixtures
-        def dimmerFixture1 = DimmerFixture.create('n1')
-        def dimmerFixture2 = DimmerFixture.create('n2')
+        def dimmerFixture1 = DimmerFixtureFactory.create('n1')
+        def dimmerFixture2 = DimmerFixtureFactory.create('n2')
 
         // Run the app sandbox, passing the dimmer fixtures in.
         def appScript = sandbox.run(api: appExecutor,
@@ -131,8 +131,8 @@ class SetLevelTests extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture1.initialize(appExecutor, appScript, [switch: "on", level: 99])
-        dimmerFixture2.initialize(appExecutor, appScript, [switch: "on", level: 99])
+        dimmerFixture1.initialize(appExecutor, [switch: "on", level: 99])
+        dimmerFixture2.initialize(appExecutor, [switch: "on", level: 99])
 
         when:
         appScript.installed()

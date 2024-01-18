@@ -1,6 +1,6 @@
 package joelwetzel.dimmer_minimums.tests
 
-import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixture
+import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixtureFactory
 import me.biocomp.hubitat_ci.util.AppExecutorWithEventForwarding
 
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
@@ -37,7 +37,7 @@ class BasicTests extends Specification {
 
     void "installed() logs the settings"() {
         given:
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the virtual dimmer device in.
         def appScript = sandbox.run(api: appExecutor,
@@ -55,7 +55,7 @@ class BasicTests extends Specification {
 
     void "initialize() subscribes to events"() {
         given:
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the dimmer fixture in.
         def appScript = sandbox.run(api: appExecutor,
