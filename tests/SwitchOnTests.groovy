@@ -1,7 +1,7 @@
 package joelwetzel.dimmer_minimums.tests
 
 import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixtureFactory
-import me.biocomp.hubitat_ci.util.AppExecutorWithEventForwarding
+import me.biocomp.hubitat_ci.util.IntegrationAppExecutor
 
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import me.biocomp.hubitat_ci.api.app_api.Subscription
@@ -27,7 +27,7 @@ class SwitchOnTests extends Specification {
 
     def log = Mock(Log)
 
-    def appExecutor = Spy(AppExecutorWithEventForwarding) {
+    def appExecutor = Spy(IntegrationAppExecutor) {
         _*getLog() >> log
     }
 
