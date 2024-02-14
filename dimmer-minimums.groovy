@@ -1,5 +1,5 @@
 /**
- *  Dimmer Minimums v1.2
+ *  Dimmer Minimums v1.4
  *
  *  Copyright 2019 Joel Wetzel
  *
